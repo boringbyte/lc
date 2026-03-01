@@ -4,7 +4,26 @@
 - [What are Structural Patterns?](#what-are-structural-patterns)
 - [Overview of All Structural Patterns](#overview-of-all-structural-patterns)
 - [Adapter Pattern](#adapter-pattern)
-
+  - [What is Adapter Pattern?](#what-is-adapter-pattern)
+  - [Real-World Analogy](#real-world-analogy)
+  - [Visual Representation](#visual-representation)
+  - [When to Use Adapter Pattern](#when-to-use-adapter-pattern)
+  - [When NOT to Use](#when-not-to-use)
+  - [Types of Adapters](#types-of-adapters)
+  - [Object Adapter (Composition)](#object-adapter-composition)
+  - [Class Adapter (Multiple Inheritance)](#class-adapter-multiple-inheritance)
+  - [Real-World Example 1: Payment Gateway Integration](#real-world-example-1-payment-gateway-integration)
+  - [Real-World Example 2: Database Adapters](#real-world-example-2-database-adapters)
+  - [Real-World Example 3: Legacy System Integration](#real-world-example-3-legacy-system-integration)
+- [Common Pitfalls](#common-pitfalls)
+  - [❌ Pitfall 1: Adapter Does Too Much](#-pitfall-1-adapter-does-too-much)
+  - [❌ Pitfall 2: Not Preserving Semantics](#-pitfall-2-not-preserving-semantics)
+- [Best Practices](#best-practices)
+  - [✅ 1. Keep Adapters Simple](#-1-keep-adapters-simple)
+  - [✅ 2. Document What's Being Adapted](#-2-document-whats-being-adapted)
+  - [✅ 3. Use Composition Over Inheritance](#-3-use-composition-over-inheritance)
+  - [✅ 4. Handle Impedance Mismatch Carefully](#-4-handle-impedance-mismatch-carefully)
+- [Summary](#summary)
 ---
 
 ## What are Structural Patterns?
@@ -24,15 +43,15 @@ Structural patterns are about organizing different classes and objects to form l
 
 ## Overview of All Structural Patterns
 
-| Pattern | Purpose | When to Use |
-|---------|---------|-------------|
-| **Adapter** | Convert interface of a class into another interface | Integrate incompatible interfaces |
-| **Bridge** | Separate abstraction from implementation | Avoid permanent binding between abstraction and implementation |
-| **Composite** | Compose objects into tree structures | Treat individual objects and compositions uniformly |
-| **Decorator** | Add responsibilities to objects dynamically | Add features without subclassing |
-| **Facade** | Provide unified interface to subsystem | Simplify complex subsystem |
-| **Flyweight** | Share common state among many objects | Reduce memory usage with many similar objects |
-| **Proxy** | Provide surrogate/placeholder for another object | Control access, add lazy loading, caching, etc. |
+| Pattern       | Purpose                                             | When to Use                                                    |
+|---------------|-----------------------------------------------------|----------------------------------------------------------------|
+| **Adapter**   | Convert interface of a class into another interface | Integrate incompatible interfaces                              |
+| **Bridge**    | Separate abstraction from implementation            | Avoid permanent binding between abstraction and implementation |
+| **Composite** | Compose objects into tree structures                | Treat individual objects and compositions uniformly            |
+| **Decorator** | Add responsibilities to objects dynamically         | Add features without subclassing                               |
+| **Facade**    | Provide unified interface to subsystem              | Simplify complex subsystem                                     |
+| **Flyweight** | Share common state among many objects               | Reduce memory usage with many similar objects                  |
+| **Proxy**     | Provide surrogate/placeholder for another object    | Control access, add lazy loading, caching, etc.                |
 
 ---
 
@@ -539,7 +558,7 @@ process_order('paypal')
 
 ```python
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any
+from typing import Any
 
 # ============ TARGET INTERFACE ============
 
@@ -551,7 +570,7 @@ class Database(ABC):
         pass
     
     @abstractmethod
-    def query(self, sql: str) -> List[Dict[str, Any]]:
+    def query(self, sql: str) -> list[dict[str, Any]]:
         pass
     
     @abstractmethod
@@ -571,7 +590,7 @@ class MySQLDriver:
         print(f"🐬 MySQL: Connected to {database} at {host}")
         self.connected = True
     
-    def mysql_query(self, query: str) -> List[tuple]:
+    def mysql_query(self, query: str) -> list[tuple]:
         print(f"🐬 MySQL: Executing query: {query}")
         # Returns list of tuples
         return [
@@ -594,7 +613,7 @@ class PostgreSQLDriver:
         print(f"🐘 PostgreSQL: Connected using DSN: {dsn}")
         self.connection = "active"
     
-    def pg_execute_query(self, sql: str) -> List[Dict]:
+    def pg_execute_query(self, sql: str) -> list[dict]:
         print(f"🐘 PostgreSQL: Query: {sql}")
         # Returns list of dicts
         return [
@@ -602,7 +621,7 @@ class PostgreSQLDriver:
             {'name': 'Diana', 'age': 28, 'email': 'diana@example.com'}
         ]
     
-    def pg_execute_command(self, sql: str) -> Dict:
+    def pg_execute_command(self, sql: str) -> dict:
         print(f"🐘 PostgreSQL: Command: {sql}")
         return {'rows_affected': 1, 'status': 'OK'}
     
@@ -617,14 +636,14 @@ class MongoDBDriver:
         print(f"🍃 MongoDB: Connected to {db_name}")
         self.db = db_name
     
-    def mongo_find(self, collection: str, query: Dict) -> List[Dict]:
+    def mongo_find(self, collection: str, query: dict) -> list[dict]:
         print(f"🍃 MongoDB: Finding in {collection}: {query}")
         return [
             {'_id': '1', 'name': 'Eve', 'age': 32},
             {'_id': '2', 'name': 'Frank', 'age': 29}
         ]
     
-    def mongo_insert(self, collection: str, document: Dict) -> str:
+    def mongo_insert(self, collection: str, document: dict) -> str:
         print(f"🍃 MongoDB: Inserting into {collection}")
         return 'inserted_id_123'
     
@@ -650,7 +669,7 @@ class MySQLAdapter(Database):
             params['database']
         )
     
-    def query(self, sql: str) -> List[Dict[str, Any]]:
+    def query(self, sql: str) -> list[dict[str, Any]]:
         # MySQL returns tuples, we need to convert to dicts
         result_tuples = self.driver.mysql_query(sql)
         
@@ -674,7 +693,7 @@ class PostgreSQLAdapter(Database):
         # PostgreSQL uses DSN format
         self.driver.pg_connect(connection_string)
     
-    def query(self, sql: str) -> List[Dict[str, Any]]:
+    def query(self, sql: str) -> list[dict[str, Any]]:
         # PostgreSQL already returns dicts, perfect!
         return self.driver.pg_execute_query(sql)
     
@@ -697,7 +716,7 @@ class MongoDBAdapter(Database):
         db_name = connection_string.split('/')[-1]
         self.driver.mongo_connect(connection_string, db_name)
     
-    def query(self, sql: str) -> List[Dict[str, Any]]:
+    def query(self, sql: str) -> list[dict[str, Any]]:
         # Convert SQL-like query to MongoDB query
         # This is simplified - in reality would need SQL parsing
         print(f"⚠️  Converting SQL to MongoDB query: {sql}")
@@ -730,7 +749,7 @@ class UserRepository:
     def __init__(self, database: Database):
         self.db = database
     
-    def get_all_users(self) -> List[Dict[str, Any]]:
+    def get_all_users(self) -> list[dict[str, Any]]:
         return self.db.query("SELECT * FROM users")
     
     def create_user(self, name: str, age: int, email: str) -> int:
@@ -779,7 +798,6 @@ mongo_db.close()
 
 ```python
 from abc import ABC, abstractmethod
-from typing import Dict, List
 from datetime import datetime
 
 # ============ NEW SYSTEM (TARGET INTERFACE) ============
@@ -788,11 +806,11 @@ class ModernLogger(ABC):
     """Modern logging interface with structured logging"""
     
     @abstractmethod
-    def log(self, level: str, message: str, context: Dict = None):
+    def log(self, level: str, message: str, context: dict = None):
         pass
     
     @abstractmethod
-    def get_logs(self, level: str = None) -> List[Dict]:
+    def get_logs(self, level: str = None) -> list[dict]:
         pass
 
 # ============ LEGACY SYSTEM (ADAPTEE) ============
@@ -819,7 +837,7 @@ class LegacySyslogger:
         """Legacy syslog interface"""
         print(f"📡 Syslog: priority={priority}, facility={facility}, msg={msg}")
     
-    def query_logs(self, priority_filter: int) -> List[str]:
+    def query_logs(self, priority_filter: int) -> list[str]:
         return ["<34>Jan 1 12:00:00 app: message 1"]
 
 # ============ ADAPTERS ============
@@ -837,7 +855,7 @@ class LegacyFileLoggerAdapter(ModernLogger):
             'CRITICAL': 'FATAL'
         }
     
-    def log(self, level: str, message: str, context: Dict = None):
+    def log(self, level: str, message: str, context: dict = None):
         # Convert modern structured log to legacy plain text format
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         legacy_level = self._level_map.get(level, 'INFO')
@@ -851,7 +869,7 @@ class LegacyFileLoggerAdapter(ModernLogger):
         
         self.legacy_logger.write_log(log_line)
     
-    def get_logs(self, level: str = None) -> List[Dict]:
+    def get_logs(self, level: str = None) -> list[dict]:
         # Parse legacy plain text logs into structured format
         logs_text = self.legacy_logger.read_logs()
         logs = []
@@ -892,7 +910,7 @@ class LegacySysloggerAdapter(ModernLogger):
             'CRITICAL': 2
         }
     
-    def log(self, level: str, message: str, context: Dict = None):
+    def log(self, level: str, message: str, context: dict = None):
         priority = self._priority_map.get(level, 6)
         facility = 16  # Local0
         
@@ -903,7 +921,7 @@ class LegacySysloggerAdapter(ModernLogger):
         
         self.legacy_syslog.syslog(priority, facility, full_message)
     
-    def get_logs(self, level: str = None) -> List[Dict]:
+    def get_logs(self, level: str = None) -> list[dict]:
         # Query all logs and parse
         priority = self._priority_map.get(level, 7) if level else 7
         raw_logs = self.legacy_syslog.query_logs(priority)
@@ -974,26 +992,41 @@ app2.process_request(456)
 
 ```python
 # BAD - Adapter doing business logic
+from abc import ABC
+
+class TargetInterface(ABC):
+   pass
+
+class Adaptee:
+   pass
+
+def process_result(update):
+   pass
+
+def transform(update):
+   pass
+   
 class BadAdapter(TargetInterface):
-    def __init__(self):
-        self.adaptee = Adaptee()
-    
-    def target_method(self):
-        # Adapter should NOT contain business logic!
-        if some_complex_condition:
-            result = self.adaptee.method1()
-            process_result(result)
-            return transform(result)
-        # ... more business logic
+   def __init__(self):
+      self.adaptee = Adaptee()
+
+   def target_method(self):
+      # Adapter should NOT contain business logic!
+      if some_complex_condition:
+         result = self.adaptee.method1()
+         process_result(result)
+         return transform(result)
+      # ... more business logic
+
 
 # GOOD - Adapter only adapts interface
 class GoodAdapter(TargetInterface):
-    def __init__(self):
-        self.adaptee = Adaptee()
-    
-    def target_method(self):
-        # Just adapt the interface
-        return self.adaptee.adaptee_method()
+   def __init__(self):
+      self.adaptee = Adaptee()
+
+   def target_method(self):
+      # Just adapt the interface
+      return self.adaptee.adaptee_method()
 ```
 
 ---
@@ -1026,6 +1059,16 @@ class GoodAdapter:
 
 ```python
 # Adapter should only translate interface, not add features
+from abc import ABC
+
+class Target(ABC):
+   pass
+
+class Adaptee:
+   
+   def specific_request(self):
+      pass
+   
 class SimpleAdapter(Target):
     def __init__(self, adaptee: Adaptee):
         self.adaptee = adaptee
@@ -1039,6 +1082,11 @@ class SimpleAdapter(Target):
 ### ✅ 2. Document What's Being Adapted
 
 ```python
+from abc import ABC
+
+class PaymentProcessor(ABC):
+   pass
+
 class PaymentAdapter(PaymentProcessor):
     """
     Adapts Stripe API to our PaymentProcessor interface.
@@ -1078,10 +1126,10 @@ class DatabaseAdapter:
 
 ## Summary
 
-| Aspect | Details |
-|--------|---------|
-| **Purpose** | Make incompatible interfaces work together |
-| **Use When** | Integrating legacy code, third-party libraries, different APIs |
-| **Avoid When** | You control both interfaces, simple wrapper suffices |
-| **Key Benefit** | Reuse existing code without modification |
-| **Common Use Cases** | Payment gateways, databases, legacy systems |
+| Aspect               | Details                                                        |
+|----------------------|----------------------------------------------------------------|
+| **Purpose**          | Make incompatible interfaces work together                     |
+| **Use When**         | Integrating legacy code, third-party libraries, different APIs |
+| **Avoid When**       | You control both interfaces, simple wrapper suffices           |
+| **Key Benefit**      | Reuse existing code without modification                       |
+| **Common Use Cases** | Payment gateways, databases, legacy systems                    |
