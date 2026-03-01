@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from dateutil.relativedelta import relativedelta
+
 
 class Subscription(ABC):
 
@@ -30,3 +32,25 @@ class Subscription(ABC):
     @abstractmethod
     def expiration(self):
         pass
+
+
+class Monthly(Subscription):
+
+    @property
+    def price_base(self):
+        return 50.00
+
+    @property
+    def expiration(self):
+        return self._enrolled + relativedelta(months=1)
+
+
+class Annual(Subscription):
+
+    @property
+    def price_base(self):
+        return 250.00
+
+    @property
+    def expiration(self):
+        return self._enrolled + relativedelta(years=1)

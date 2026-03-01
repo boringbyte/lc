@@ -1010,7 +1010,7 @@ class BadAdapter(TargetInterface):
    def __init__(self):
       self.adaptee = Adaptee()
 
-   def target_method(self):
+   def target_method(self, some_complex_condition):
       # Adapter should NOT contain business logic!
       if some_complex_condition:
          result = self.adaptee.method1()

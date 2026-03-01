@@ -2,13 +2,35 @@
 
 ## 📋 Table of Contents
 - [What is Bridge Pattern?](#what-is-bridge-pattern)
+  - [Key Characteristics](#key-characteristics)
+  - [The Problem Bridge Solves](#the-problem-bridge-solves)
+  - [Real-World Analogy](#real-world-analogy)
+  - [Visual Representation](#visual-representation)
+- [Bridge vs Similar Patterns](#bridge-vs-similar-patterns)
 - [When to Use](#when-to-use)
+  - [✅ Perfect Use Cases](#-perfect-use-cases)
 - [When NOT to Use](#when-not-to-use)
+  - [❌ Avoid Bridge When](#when-not-to-use)
 - [Basic Implementation](#basic-implementation)
 - [Real-World Examples](#real-world-examples)
+  - [Example 1: Remote Control and Devices](#example-1-remote-control-and-devices)
+  - [Example 2: Messaging System (Message + Platform)](#example-2-messaging-system-message--platform)
+  - [Example 3: Drawing Shapes with Renderers](#example-3-drawing-shapes-with-renderers)
 - [Common Pitfalls](#common-pitfalls)
+  - [❌ Pitfall 1: Confusing Bridge with Adapter](#-pitfall-1-confusing-bridge-with-adapter)
+  - [❌ Pitfall 2: Not Using Composition](#-pitfall-2-not-using-composition)
+  - [❌ Pitfall 3: Implementation Depends on Abstraction](#-pitfall-3-implementation-depends-on-abstraction)
+  - [❌ Pitfall 4: Creating Bridge When Not Needed](#-pitfall-4-creating-bridge-when-not-needed)
 - [Best Practices](#best-practices)
-
+  - [✅ 1. Identify Two Orthogonal Dimensions](#-1-identify-two-orthogonal-dimensions)
+  - [✅ 2. Keep Implementation Interface Minimal](#-2-keep-implementation-interface-minimal)
+  - [✅ 3. Document the Two Hierarchies](#-3-document-the-two-hierarchies)
+  - [✅ 4. Allow Runtime Switching](#-4-allow-runtime-switching)
+  - [✅ 5. Use Dependency Injection](#-5-use-dependency-injection)
+- [Summary](#summary)
+- [Bridge vs Other Patterns](#bridge-vs-other-patterns)
+- [When to Use Bridge](#when-to-use-bridge)
+- [Key Takeaways](#key-takeaways)
 ---
 
 ## What is Bridge Pattern?
@@ -18,7 +40,7 @@
 ### Key Characteristics:
 - ✅ Separates abstraction from implementation
 - ✅ Both can vary independently
-- ✅ Prefers composition over inheritance
+- ✅ Prefers composition to inheritance
 - ✅ Avoids class explosion (combinatorial growth)
 - ✅ Increases flexibility
 
@@ -77,12 +99,12 @@ Client → Abstraction → uses → Implementation
 
 ## Bridge vs Similar Patterns
 
-| Pattern | Purpose | Structure |
-|---------|---------|-----------|
-| **Bridge** | Separate abstraction from implementation | Two hierarchies connected by composition |
-| **Adapter** | Make incompatible interfaces work | Wraps existing interface |
-| **Strategy** | Vary algorithm | One hierarchy, interchangeable algorithms |
-| **State** | Vary behavior based on state | One hierarchy, state-dependent behavior |
+| Pattern      | Purpose                                  | Structure                                 |
+|--------------|------------------------------------------|-------------------------------------------|
+| **Bridge**   | Separate abstraction from implementation | Two hierarchies connected by composition  |
+| **Adapter**  | Make incompatible interfaces work        | Wraps existing interface                  |
+| **Strategy** | Vary algorithm                           | One hierarchy, interchangeable algorithms |
+| **State**    | Vary behavior based on state             | One hierarchy, state-dependent behavior   |
 
 **Key Difference:** Bridge creates **two separate hierarchies** (abstraction and implementation) that can evolve independently.
 
@@ -158,6 +180,7 @@ class Implementation(ABC):
     """
     Implementation interface.
     Defines operations that concrete implementations must provide.
+    TV Example
     """
     
     @abstractmethod
@@ -182,6 +205,7 @@ class Abstraction:
     """
     Abstraction defines the interface for the "control" part.
     It maintains a reference to an Implementation object.
+    # Remote Example
     """
     
     def __init__(self, implementation: Implementation):
@@ -1068,6 +1092,16 @@ class Abstraction:
 
 ```python
 # BAD - Using inheritance (defeats the purpose!)
+
+class Remote:
+   pass
+
+class TV:
+   pass
+
+class Radio:
+   pass
+
 class RemoteForTV(Remote, TV):
     pass
 
@@ -1085,6 +1119,14 @@ class Remote:
 ### ❌ Pitfall 3: Implementation Depends on Abstraction
 
 ```python
+from abc import ABC
+
+class Abstraction(ABC):
+   pass
+
+class ConcreteAbstraction(Abstraction):
+   pass
+
 # BAD - Implementation knows about abstraction
 class BadImplementation:
     def do_something(self, abstraction):
@@ -1137,6 +1179,8 @@ class Shape:
 ### ✅ 2. Keep Implementation Interface Minimal
 
 ```python
+from abc import ABC, abstractmethod
+
 # GOOD - Minimal, focused interface
 class Renderer(ABC):
     @abstractmethod
@@ -1183,6 +1227,17 @@ class Shape:
 ### ✅ 4. Allow Runtime Switching
 
 ```python
+from abc import ABC
+
+class Device(ABC):
+    pass
+
+class TV(Device):
+   pass
+
+class Radio(Device):
+    pass
+
 class RemoteControl:
     def __init__(self, device):
         self._device = device
@@ -1197,8 +1252,10 @@ class RemoteControl:
         self._device = new_device
 
 # Usage
+tv = TV()
 remote = RemoteControl(tv)
 # ... use with TV ...
+radio = Radio()
 remote.device = radio  # Switch to radio
 ```
 
@@ -1207,6 +1264,25 @@ remote.device = radio  # Switch to radio
 ### ✅ 5. Use Dependency Injection
 
 ```python
+from abc import ABC, abstractmethod
+
+class Renderer(ABC):
+    @abstractmethod
+    def render_point(self, x, y):
+        pass
+    
+    @abstractmethod
+    def render_line(self, x1, y1, x2, y2):
+        pass
+
+class MockRenderer(Renderer):
+    
+    def render_point(self, x, y):
+        pass
+    
+    def render_line(self, x1, y1, x2, y2):
+        pass
+
 class Shape:
     def __init__(self, renderer: Renderer):
         """Inject renderer dependency"""
@@ -1221,24 +1297,24 @@ shape = Shape(mock_renderer)
 
 ## Summary
 
-| Aspect | Details |
-|--------|---------|
-| **Purpose** | Separate abstraction from implementation |
-| **Use When** | Two orthogonal dimensions, avoid class explosion |
-| **Avoid When** | Single dimension, no variation in implementation |
-| **Key Benefit** | Both hierarchies can evolve independently |
-| **Structure** | Abstraction has-a Implementation |
+| Aspect          | Details                                          |
+|-----------------|--------------------------------------------------|
+| **Purpose**     | Separate abstraction from implementation         |
+| **Use When**    | Two orthogonal dimensions, avoid class explosion |
+| **Avoid When**  | Single dimension, no variation in implementation |
+| **Key Benefit** | Both hierarchies can evolve independently        |
+| **Structure**   | Abstraction has-a Implementation                 |
 
 ---
 
 ## Bridge vs Other Patterns
 
-| Pattern | Separates | Purpose |
-|---------|-----------|---------|
-| **Bridge** | Abstraction from Implementation | Independent variation |
-| **Adapter** | Incompatible interfaces | Make them compatible |
-| **Strategy** | Algorithm from context | Interchangeable algorithms |
-| **State** | State from context | State-dependent behavior |
+| Pattern      | Separates                       | Purpose                    |
+|--------------|---------------------------------|----------------------------|
+| **Bridge**   | Abstraction from Implementation | Independent variation      |
+| **Adapter**  | Incompatible interfaces         | Make them compatible       |
+| **Strategy** | Algorithm from context          | Interchangeable algorithms |
+| **State**    | State from context              | State-dependent behavior   |
 
 ---
 

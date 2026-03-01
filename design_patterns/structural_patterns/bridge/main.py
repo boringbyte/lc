@@ -1,5 +1,4 @@
-from annual import Annual
-from monthly import Monthly
+from design_patterns.structural_patterns.bridge.subscription import Monthly, Annual
 from datetime import datetime
 from discount import NoDiscount, StudentDiscount, CorporateDiscount
 
