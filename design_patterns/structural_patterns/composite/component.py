@@ -1,10 +1,17 @@
-from collections.abc import Iterable
-from functools import reduce
+from abc import ABC, abstractmethod
 from datetime import date
-from abs_composite import AbstractComposite
+from functools import reduce
+from typing import Iterable
 
 
-class Tree(Iterable, AbstractComposite):
+class AbstractComponent(ABC):
+
+    @abstractmethod
+    def get_oldest(self):
+        pass
+
+
+class Tree(Iterable, AbstractComponent):
 
     def __init__(self, members):
         self._members = members  # member can be either Person or another composite tree. Actual Family class is
@@ -20,9 +27,27 @@ class Tree(Iterable, AbstractComposite):
         return reduce(f, self, NullPerson())  # Recursive DFS
 
 
-class NullPerson(AbstractComposite):
+class NullPerson(AbstractComponent):
     name = None
     birthdate = date.max
 
     def get_oldest(self):
         return self
+
+
+class Person(AbstractComponent):
+
+    def __init__(self, name, birthdate):
+        self._name = name
+        self._birthdate = birthdate
+
+    def get_oldest(self):
+        return self
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def birthdate(self):
+        return self._birthdate

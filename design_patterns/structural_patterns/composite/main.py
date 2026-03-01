@@ -1,7 +1,6 @@
 from datetime import date
 from dateutil.relativedelta import relativedelta
-from person import Person
-from tree import Tree
+from design_patterns.structural_patterns.composite.component import Tree, Person
 
 
 def main():
