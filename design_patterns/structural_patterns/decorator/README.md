@@ -2,14 +2,35 @@
 
 ## 📋 Table of Contents
 - [What is Decorator Pattern?](#what-is-decorator-pattern)
+  - [Key Characteristics](#key-characteristics)
+  - [Real-World Analogy](#real-world-analogy)
+  - [Visual Representation](#visual-representation)
+  - [Decorator vs Adapter vs Inheritance](#decorator-vs-adapter-vs-inheritance)
 - [When to Use](#when-to-use)
+  - [✅ Perfect Use Cases](#-perfect-use-cases)
 - [When NOT to Use](#when-not-to-use)
+  - [❌ Avoid Decorator When](#-avoid-decorator-when)
 - [Basic Implementation](#basic-implementation)
+  - [Classic Decorator Pattern (OOP Style)](#classic-decorator-pattern-oop-style)
+  - [Coffee Shop Example - Classic Illustration](#coffee-shop-example---classic-illustration)
 - [Python-Specific Decorators](#python-specific-decorators)
+  - [Function Decorators](#function-decorators)
 - [Real-World Examples](#real-world-examples)
+  - [Example 1: Text Processing Pipeline](#example-1-text-processing-pipeline)
+  - [Example 2: Data Stream Processing](#example-2-data-stream-processing)
+  - [Example 3: HTTP Request/Response Middleware](#example-3-http-requestresponse-middleware)
 - [Common Pitfalls](#common-pitfalls)
+  - [❌ Pitfall 1: Too Many Decorators (Decorator Hell)](#-pitfall-1-too-many-decorators-decorator-hell)
+  - [❌ Pitfall 2: Order Matters (But Not Documented)](#-pitfall-2-order-matters-but-not-documented)
+  - [❌ Pitfall 3: Breaking Interface Contract](#-pitfall-3-breaking-interface-contract)
 - [Best Practices](#best-practices)
-
+  - [✅ 1. Keep Decorators Focused (Single Responsibility)](#-1-keep-decorators-focused-single-responsibility)
+  - [✅ 2. Make Decorators Independent](#-2-make-decorators-independent)
+  - [✅ 3. Document Order Dependencies](#-3-document-order-dependencies)
+  - [✅ 4. Use Type Hints](#-4-use-type-hints)
+  - [✅ 5. Consider Using Python's Built-in Decorators](#-5-consider-using-pythons-built-in-decorators)
+- [Summary](#summary)
+- [Decorator vs Other Patterns](#decorator-vs-other-patterns)
 ---
 
 ## What is Decorator Pattern?
@@ -35,19 +56,19 @@ Each layer adds functionality without changing what's underneath. You can add/re
 
 ### Visual Representation:
 ```
-Client → Decorator 1 → Decorator 2 → Decorator 3 → Core Object
-         (adds feature A) (adds feature B) (adds feature C)
+Client  →  Decorator 1   →  Decorator 2   →  Decorator 3   →  Core Object
+        (adds feature A)  (adds feature B)  (adds feature C)
 ```
 
 ---
 
-## Decorator vs Adapter vs Inheritance
+### Decorator vs Adapter vs Inheritance
 
-| Pattern | Purpose | Changes Interface? |
-|---------|---------|-------------------|
-| **Decorator** | Add responsibilities | No - keeps same interface |
-| **Adapter** | Convert interface | Yes - provides new interface |
-| **Inheritance** | Add behavior at compile-time | No - static |
+| Pattern         | Purpose                      | Changes Interface?           |
+|-----------------|------------------------------|------------------------------|
+| **Decorator**   | Add responsibilities         | No - keeps same interface    |
+| **Adapter**     | Convert interface            | Yes - provides new interface |
+| **Inheritance** | Add behavior at compile-time | No - static                  |
 
 ---
 
@@ -657,7 +678,7 @@ print("Processed:", processor5.process(blog_text))
 
 ```python
 from abc import ABC, abstractmethod
-from typing import List, Any
+from typing import Any
 import json
 import gzip
 import base64
@@ -871,7 +892,7 @@ print(f"Parsed: {json.loads(data4)}")
 
 ```python
 from abc import ABC, abstractmethod
-from typing import Dict, Any
+from typing import Any
 from datetime import datetime
 import time
 
@@ -881,7 +902,7 @@ class HTTPHandler(ABC):
     """Base interface for HTTP handlers"""
     
     @abstractmethod
-    def handle(self, request: Dict[str, Any]) -> Dict[str, Any]:
+    def handle(self, request: dict[str, Any]) -> dict[str, Any]:
         pass
 
 # ============ CONCRETE COMPONENT ============
@@ -889,7 +910,7 @@ class HTTPHandler(ABC):
 class BaseHTTPHandler(HTTPHandler):
     """Basic HTTP handler"""
     
-    def handle(self, request: Dict[str, Any]) -> Dict[str, Any]:
+    def handle(self, request: dict[str, Any]) -> dict[str, Any]:
         # Simulate request processing
         return {
             'status': 200,
@@ -905,13 +926,13 @@ class HTTPHandlerDecorator(HTTPHandler):
     def __init__(self, handler: HTTPHandler):
         self._handler = handler
     
-    def handle(self, request: Dict[str, Any]) -> Dict[str, Any]:
+    def handle(self, request: dict[str, Any]) -> dict[str, Any]:
         return self._handler.handle(request)
 
 class AuthenticationMiddleware(HTTPHandlerDecorator):
     """Checks authentication before processing request"""
     
-    def handle(self, request: Dict[str, Any]) -> Dict[str, Any]:
+    def handle(self, request: dict[str, Any]) -> dict[str, Any]:
         print("🔐 Authentication Middleware: Checking credentials...")
         
         # Check for auth token
@@ -949,7 +970,7 @@ class RateLimitMiddleware(HTTPHandlerDecorator):
         self.max_requests = max_requests
         self.requests = {}  # ip -> [timestamps]
     
-    def handle(self, request: Dict[str, Any]) -> Dict[str, Any]:
+    def handle(self, request: dict[str, Any]) -> dict[str, Any]:
         print("⏱️  Rate Limit Middleware: Checking request rate...")
         
         client_ip = request.get('ip', 'unknown')
@@ -983,7 +1004,7 @@ class RateLimitMiddleware(HTTPHandlerDecorator):
 class LoggingMiddleware(HTTPHandlerDecorator):
     """Logs all requests and responses"""
     
-    def handle(self, request: Dict[str, Any]) -> Dict[str, Any]:
+    def handle(self, request: dict[str, Any]) -> dict[str, Any]:
         print("\n" + "="*60)
         print("📋 Logging Middleware: Incoming request")
         print(f"   Method: {request.get('method', 'GET')}")
@@ -1005,7 +1026,7 @@ class LoggingMiddleware(HTTPHandlerDecorator):
 class CORSMiddleware(HTTPHandlerDecorator):
     """Adds CORS headers to response"""
     
-    def handle(self, request: Dict[str, Any]) -> Dict[str, Any]:
+    def handle(self, request: dict[str, Any]) -> dict[str, Any]:
         print("🌐 CORS Middleware: Adding CORS headers...")
         
         response = self._handler.handle(request)
@@ -1025,7 +1046,7 @@ class CacheMiddleware(HTTPHandlerDecorator):
         super().__init__(handler)
         self.cache = {}
     
-    def handle(self, request: Dict[str, Any]) -> Dict[str, Any]:
+    def handle(self, request: dict[str, Any]) -> dict[str, Any]:
         method = request.get('method', 'GET')
         path = request.get('path', '/')
         
@@ -1055,7 +1076,7 @@ class CacheMiddleware(HTTPHandlerDecorator):
 class ErrorHandlingMiddleware(HTTPHandlerDecorator):
     """Catches and handles errors"""
     
-    def handle(self, request: Dict[str, Any]) -> Dict[str, Any]:
+    def handle(self, request: dict[str, Any]) -> dict[str, Any]:
         print("🛡️  Error Handling Middleware: Processing request...")
         
         try:
@@ -1151,6 +1172,23 @@ result = (Decorator10(
           )).operation()
 
 # GOOD - Use builder or factory to manage complexity
+from abc import ABC
+
+class Component(ABC):
+   pass
+
+class BaseComponent(Component):
+   pass
+
+class Decorator(Component):
+   pass
+
+class LoggingDecorator(Decorator):
+   pass
+
+class CachingDecorator(Decorator):
+   pass
+
 class DecoratorBuilder:
     def __init__(self, component):
         self.component = component
@@ -1310,21 +1348,21 @@ def handle_request():
 
 ## Summary
 
-| Aspect | Details |
-|--------|---------|
-| **Purpose** | Add responsibilities to objects dynamically |
-| **Use When** | Need flexible feature addition, avoid subclass explosion |
-| **Avoid When** | Simple addition, too many decorators, order complexity |
-| **Key Benefit** | Flexible alternative to subclassing |
-| **Common Use Cases** | Logging, caching, authentication, data transformation |
+| Aspect               | Details                                                  |
+|----------------------|----------------------------------------------------------|
+| **Purpose**          | Add responsibilities to objects dynamically              |
+| **Use When**         | Need flexible feature addition, avoid subclass explosion |
+| **Avoid When**       | Simple addition, too many decorators, order complexity   |
+| **Key Benefit**      | Flexible alternative to subclassing                      |
+| **Common Use Cases** | Logging, caching, authentication, data transformation    |
 
 ---
 
 ## Decorator vs Other Patterns
 
-| Pattern | Purpose | Structure |
-|---------|---------|-----------|
-| **Decorator** | Add behavior dynamically | Wraps object, same interface |
-| **Adapter** | Convert interface | Wraps object, different interface |
-| **Proxy** | Control access | Wraps object, same interface, controls access |
-| **Composite** | Part-whole hierarchy | Tree structure |
+| Pattern       | Purpose                  | Structure                                     |
+|---------------|--------------------------|-----------------------------------------------|
+| **Decorator** | Add behavior dynamically | Wraps object, same interface                  |
+| **Adapter**   | Convert interface        | Wraps object, different interface             |
+| **Proxy**     | Control access           | Wraps object, same interface, controls access |
+| **Composite** | Part-whole hierarchy     | Tree structure                                |
