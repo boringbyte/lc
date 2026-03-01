@@ -4,7 +4,6 @@
 - [What are Structural Patterns?](#what-are-structural-patterns)
 - [Overview of All Structural Patterns](#overview-of-all-structural-patterns)
 - [Adapter Pattern](#adapter-pattern)
-- [When to Learn Next Patterns](#when-to-learn-next-patterns)
 
 ---
 
