@@ -265,7 +265,6 @@ client_code(proxy)  # Transparent to client
 ```python
 from abc import ABC, abstractmethod
 import time
-from typing import Optional
 
 # ============ INTERFACE ============
 
@@ -321,7 +320,7 @@ class ImageProxy(Image):
     
     def __init__(self, filename: str):
         self.filename = filename
-        self._real_image: Optional[RealImage] = None
+        self._real_image: RealImage | None = None
     
     def display(self):
         """Display image - loads only when needed"""
@@ -386,7 +385,6 @@ print(f"✅ Saved loading time for {image3.filename}")
 
 ```python
 from abc import ABC, abstractmethod
-from typing import Dict, List
 from enum import Enum
 from datetime import datetime
 
@@ -464,7 +462,7 @@ class DocumentProxy(Document):
     """
     
     # Define permissions for each role
-    _role_permissions: Dict[Role, List[Permission]] = {
+    _role_permissions: dict[Role, list[Permission]] = {
         Role.ADMIN: [Permission.READ, Permission.WRITE, Permission.DELETE, Permission.EXECUTE],
         Role.USER: [Permission.READ, Permission.WRITE],
         Role.GUEST: [Permission.READ]
@@ -473,7 +471,7 @@ class DocumentProxy(Document):
     def __init__(self, real_document: RealDocument, current_user: User):
         self._real_document = real_document
         self._current_user = current_user
-        self._access_log: List[Dict] = []
+        self._access_log: list[dict] = []
     
     def _check_permission(self, required_permission: Permission) -> bool:
         """Check if current user has required permission"""
@@ -530,7 +528,7 @@ class DocumentProxy(Document):
             self._log_access("DELETE", False)
             raise PermissionError(f"User {self._current_user.username} doesn't have DELETE permission")
     
-    def get_access_log(self) -> List[Dict]:
+    def get_access_log(self) -> list[dict]:
         """Get access log (admin only)"""
         if self._current_user.role == Role.ADMIN:
             return self._access_log
@@ -623,7 +621,7 @@ except PermissionError as e:
 ```python
 from abc import ABC, abstractmethod
 import time
-from typing import Dict, Optional, Any
+from typing import Any
 from datetime import datetime, timedelta
 
 # ============ INTERFACE ============
@@ -632,11 +630,11 @@ class DataService(ABC):
     """Interface for data service"""
     
     @abstractmethod
-    def get_user_data(self, user_id: int) -> Dict:
+    def get_user_data(self, user_id: int) -> dict:
         pass
     
     @abstractmethod
-    def get_product_data(self, product_id: int) -> Dict:
+    def get_product_data(self, product_id: int) -> dict:
         pass
     
     @abstractmethod
@@ -650,7 +648,7 @@ class RealDataService(DataService):
     Real data service that makes expensive database/API calls.
     """
     
-    def get_user_data(self, user_id: int) -> Dict:
+    def get_user_data(self, user_id: int) -> dict:
         """Expensive database query"""
         print(f"🗄️  RealDataService: Fetching user {user_id} from database...")
         time.sleep(1)  # Simulate slow database query
@@ -662,7 +660,7 @@ class RealDataService(DataService):
             'created_at': '2024-01-01'
         }
     
-    def get_product_data(self, product_id: int) -> Dict:
+    def get_product_data(self, product_id: int) -> dict:
         """Expensive API call"""
         print(f"🌐 RealDataService: Fetching product {product_id} from API...")
         time.sleep(1.5)  # Simulate slow API call
@@ -712,7 +710,7 @@ class CachingDataServiceProxy(DataService):
     
     def __init__(self, real_service: RealDataService, default_ttl: int = 60):
         self._real_service = real_service
-        self._cache: Dict[str, CacheEntry] = {}
+        self._cache: dict[str, CacheEntry] = {}
         self._default_ttl = default_ttl
         
         # Statistics
@@ -726,7 +724,7 @@ class CachingDataServiceProxy(DataService):
         """Generate cache key"""
         return f"{method}:{':'.join(map(str, args))}"
     
-    def _get_from_cache(self, key: str) -> Optional[Any]:
+    def _get_from_cache(self, key: str) -> Any | None:
         """Get from cache if exists and not expired"""
         if key in self._cache:
             entry = self._cache[key]
@@ -744,13 +742,13 @@ class CachingDataServiceProxy(DataService):
         print(f"❌ Cache MISS: {key}")
         return None
     
-    def _store_in_cache(self, key: str, data: Any, ttl: Optional[int] = None):
+    def _store_in_cache(self, key: str, data: Any, ttl: int | None = None):
         """Store in cache"""
         ttl = ttl or self._default_ttl
         self._cache[key] = CacheEntry(data, ttl)
         print(f"💾 Cached: {key} (TTL: {ttl}s)")
     
-    def get_user_data(self, user_id: int) -> Dict:
+    def get_user_data(self, user_id: int) -> dict:
         """Get user data with caching"""
         self._stats['total_requests'] += 1
         cache_key = self._get_cache_key('get_user_data', user_id)
@@ -768,7 +766,7 @@ class CachingDataServiceProxy(DataService):
         
         return data
     
-    def get_product_data(self, product_id: int) -> Dict:
+    def get_product_data(self, product_id: int) -> dict:
         """Get product data with caching"""
         self._stats['total_requests'] += 1
         cache_key = self._get_cache_key('get_product_data', product_id)
@@ -801,7 +799,7 @@ class CachingDataServiceProxy(DataService):
         print("🗑️  Clearing cache...")
         self._cache.clear()
     
-    def get_stats(self) -> Dict:
+    def get_stats(self) -> dict:
         """Get cache statistics"""
         total = self._stats['total_requests']
         hits = self._stats['hits']
@@ -891,7 +889,6 @@ for key, value in stats.items():
 
 ```python
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional
 import time
 from datetime import datetime
 
@@ -901,11 +898,11 @@ class WeatherService(ABC):
     """Interface for weather service"""
     
     @abstractmethod
-    def get_current_weather(self, city: str) -> Dict:
+    def get_current_weather(self, city: str) -> dict:
         pass
     
     @abstractmethod
-    def get_forecast(self, city: str, days: int) -> List[Dict]:
+    def get_forecast(self, city: str, days: int) -> list[dict]:
         pass
 
 # ============ REAL SUBJECT (Remote Service) ============
@@ -920,7 +917,7 @@ class RemoteWeatherAPI(WeatherService):
         self.api_key = api_key
         self.api_url = "https://api.weather.com"
     
-    def get_current_weather(self, city: str) -> Dict:
+    def get_current_weather(self, city: str) -> dict:
         """Make HTTP request to get current weather"""
         print(f"🌐 RemoteWeatherAPI: Making HTTP request to {self.api_url}")
         print(f"   Endpoint: /current/{city}")
@@ -938,7 +935,7 @@ class RemoteWeatherAPI(WeatherService):
             'timestamp': datetime.now().isoformat()
         }
     
-    def get_forecast(self, city: str, days: int) -> List[Dict]:
+    def get_forecast(self, city: str, days: int) -> list[dict]:
         """Make HTTP request to get forecast"""
         print(f"🌐 RemoteWeatherAPI: Making HTTP request to {self.api_url}")
         print(f"   Endpoint: /forecast/{city}?days={days}")
@@ -972,7 +969,7 @@ class WeatherServiceProxy(WeatherService):
     
     def __init__(self, api_key: str):
         self._remote_api = RemoteWeatherAPI(api_key)
-        self._cache: Dict[str, Dict] = {}
+        self._cache: dict[str, dict] = {}
         self._max_retries = 3
     
     def _validate_city(self, city: str) -> bool:
@@ -993,7 +990,7 @@ class WeatherServiceProxy(WeatherService):
                     raise
                 time.sleep(1)  # Wait before retry
     
-    def get_current_weather(self, city: str) -> Dict:
+    def get_current_weather(self, city: str) -> dict:
         """
         Get current weather with:
         - Input validation
@@ -1040,7 +1037,7 @@ class WeatherServiceProxy(WeatherService):
                 'message': 'Using fallback data'
             }
     
-    def get_forecast(self, city: str, days: int) -> List[Dict]:
+    def get_forecast(self, city: str, days: int) -> list[dict]:
         """
         Get forecast with validation and error handling
         """
@@ -1131,6 +1128,16 @@ forecast_adjusted = weather_service.get_forecast("Paris", 10)  # Will be adjuste
 ### ❌ Pitfall 1: Proxy Has Different Interface
 
 ```python
+from abc import ABC, abstractmethod
+
+class Subject(ABC):
+    """Interface that both RealSubject and Proxy implement"""
+    
+    @abstractmethod
+    def request(self) -> str:
+        pass
+    
+    
 # BAD - Proxy has different interface than real object
 class BadProxy:
     def __init__(self, real_obj):
@@ -1140,6 +1147,7 @@ class BadProxy:
         return self.real_obj.do_something()
 
 # GOOD - Same interface
+
 class GoodProxy(Subject):
     def __init__(self, real_obj: Subject):
         self.real_obj = real_obj
@@ -1157,6 +1165,10 @@ class GoodProxy(Subject):
 class BadRemoteProxy:
     def get_data(self):
         return self.remote_api.fetch()  # What if network fails?
+
+class NetworkError(Exception):
+    """Base class for custom network-related exceptions."""
+    pass
 
 # GOOD - Proper error handling
 class GoodRemoteProxy:
@@ -1224,6 +1236,14 @@ class GoodVirtualProxy:
 ### ✅ 1. Keep Proxy Transparent
 
 ```python
+from abc import ABC, abstractmethod
+
+class WeatherService(ABC):
+    
+    @abstractmethod
+    def get_current_weather(self, city: str) -> dict:
+        pass
+    
 # Client shouldn't know it's using a proxy
 def client_code(service: WeatherService):
     # Works with both proxy and real service
