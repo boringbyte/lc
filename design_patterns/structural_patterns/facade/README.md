@@ -1234,6 +1234,13 @@ class GoodFacade:
 
 ```python
 # BAD - Swallows exceptions
+
+class SubsystemException(Exception):
+    pass
+
+class FacadeException(Exception):
+    pass
+
 class BadFacade:
     def operation(self):
         try:
@@ -1257,6 +1264,8 @@ class GoodFacade:
 
 ```python
 # BAD - Facade method has too many parameters
+ProcessConfig = {}
+
 class BadFacade:
     def process(self, a, b, c, d, e, f, g, h):
         # Too complex!
@@ -1339,6 +1348,12 @@ class HomeTheaterFacade:
 ### ✅ 4. Don't Prevent Direct Access
 
 ```python
+class SubsystemA:
+    pass
+
+class SubsystemB:
+    pass
+
 class SystemFacade:
     def __init__(self):
         # Make subsystems accessible if needed
@@ -1362,6 +1377,24 @@ facade.subsystem_a.specialized_method()  # Advanced way
 ### ✅ 5. Use Dependency Injection
 
 ```python
+class InventorySystem:
+    pass
+
+class PaymentProcessor:
+    pass
+
+class ShippingService:
+    pass
+
+class MockInventory(InventorySystem):
+    pass
+
+class MockPayment(PaymentProcessor):
+    pass
+
+class MockShipping(ShippingService):
+    pass
+
 class OrderFacade:
     def __init__(
         self,
