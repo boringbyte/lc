@@ -2,13 +2,36 @@
 
 ## 📋 Table of Contents
 - [What is Flyweight Pattern?](#what-is-flyweight-pattern)
+  - [Key Characteristics](#key-characteristics)
+  - [The Problem Flyweight Solves](#the-problem-flyweight-solves)
+  - [Real-World Analogy](#real-world-analogy)
+  - [Visual Representation](#visual-representation)
+  - [Intrinsic vs Extrinsic State](#intrinsic-vs-extrinsic-state)
 - [When to Use](#when-to-use)
+  - [✅ Perfect Use Cases](#-perfect-use-cases)
 - [When NOT to Use](#when-not-to-use)
+  - [❌ Avoid Flyweight When](#when-not-to-use)
 - [Basic Implementation](#basic-implementation)
+  - [Classic Flyweight Structure](#classic-flyweight-structure)
 - [Real-World Examples](#real-world-examples)
+  - [Example 1: Game Forest (Trees)](#example-1-game-forest-trees)
+  - [Example 2: Text Editor (Characters)](#example-2-text-editor-characters)
+  - [Example 3: Particle System (Game)](#example-3-particle-system-game)
 - [Common Pitfalls](#common-pitfalls)
+  - [❌ Pitfall 1: Making Flyweight Mutable](#-pitfall-1-making-flyweight-mutable)
+  - [❌ Pitfall 2: Storing Extrinsic State in Flyweight](#-pitfall-2-storing-extrinsic-state-in-flyweight)
+  - [❌ Pitfall 3: Not Using Factory](#-pitfall-3-not-using-factory)
+  - [❌ Pitfall 4: Using Flyweight for Few Objects](#-pitfall-4-using-flyweight-for-few-objects)
 - [Best Practices](#best-practices)
-
+  - [✅ 1. Clearly Identify Intrinsic vs Extrinsic State](#-1-clearly-identify-intrinsic-vs-extrinsic-state)
+  - [✅ 2. Make Flyweights Immutable](#-2-make-flyweights-immutable)
+  - [✅ 3. Use Factory for All Flyweight Creation](#-3-use-factory-for-all-flyweight-creation)
+  - [✅ 4. Consider Thread Safety](#-4-consider-thread-safety)
+  - [✅ 5. Measure Memory Savings](#-5-measure-memory-savings)
+- [Summary](#summary)
+- [Flyweight Pattern Checklist](#flyweight-pattern-checklist)
+- [Key Takeaways](#key-takeaways)
+- [Memory Savings Example](#memory-savings-example)
 ---
 
 ## What is Flyweight Pattern?
@@ -27,6 +50,16 @@
 **Without Flyweight:**
 ```python
 # Creating 1 million tree objects
+import random
+
+class Tree:
+   def __init__(self, name, color, texture, x, y):
+       self.name = name
+       self.color = color
+       self.texture = texture
+       self.x = x
+       self.y = y
+
 trees = []
 for i in range(1_000_000):
     tree = Tree(
@@ -44,6 +77,27 @@ for i in range(1_000_000):
 **With Flyweight:**
 ```python
 # Share common data (intrinsic state)
+import random
+
+class TreeType:
+   def __init__(self, name, color, texture):
+       self.name = name
+       self.color = color
+       self.texture = texture
+    
+   def draw(self, x, y):
+      pass
+
+class Tree:
+    def __init__(self, x, y, tree_type):
+        self.x = x
+        self.y = y
+        self.tree_type = tree_type  # Reference to the shared Flyweight object
+
+    def draw(self):
+        # Delegate rendering to the shared type object, passing unique coordinates
+        self.tree_type.draw(self.x, self.y)
+
 oak_type = TreeType("Oak", "Green", "bark.png")  # Created ONCE
 
 # Store only unique data (extrinsic state)
@@ -81,14 +135,14 @@ Flyweight A: [Shared Data A]  ← Stored only once!
 
 ---
 
-## Intrinsic vs Extrinsic State
+### Intrinsic vs Extrinsic State
 
 **Critical Concept:**
 
-| State Type | Description | Example | Stored Where |
-|------------|-------------|---------|--------------|
-| **Intrinsic** | Shared, immutable, context-independent | Tree species, color, texture | Inside Flyweight (shared) |
-| **Extrinsic** | Unique, context-dependent | Tree position (x, y), size | Outside Flyweight (per object) |
+| State Type    | Description                            | Example                      | Stored Where                   |
+|---------------|----------------------------------------|------------------------------|--------------------------------|
+| **Intrinsic** | Shared, immutable, context-independent | Tree species, color, texture | Inside Flyweight (shared)      |
+| **Extrinsic** | Unique, context-dependent              | Tree position (x, y), size   | Outside Flyweight (per object) |
 
 **Key Rule:** Flyweight stores **only intrinsic state**. Extrinsic state is passed as parameters or stored separately.
 
@@ -156,8 +210,6 @@ Flyweight A: [Shared Data A]  ← Stored only once!
 ### Classic Flyweight Structure
 
 ```python
-from typing import Dict
-
 # ============ FLYWEIGHT ============
 
 class Flyweight:
@@ -186,7 +238,7 @@ class FlyweightFactory:
     """
     
     def __init__(self):
-        self._flyweights: Dict[str, Flyweight] = {}
+        self._flyweights: dict[str, Flyweight] = {}
     
     def get_flyweight(self, shared_state: str) -> Flyweight:
         """
@@ -472,8 +524,6 @@ print("="*70)
 ### Example 2: Text Editor (Characters)
 
 ```python
-from typing import Dict, List
-
 # ============ FLYWEIGHT (Character Appearance) ============
 
 class CharacterStyle:
@@ -513,7 +563,7 @@ class CharacterStyleFactory:
     """Factory manages character style flyweights"""
     
     def __init__(self):
-        self._styles: Dict[str, CharacterStyle] = {}
+        self._styles: dict[str, CharacterStyle] = {}
         self._requests = 0
         self._cache_hits = 0
     
@@ -567,7 +617,7 @@ class TextDocument:
     """Document contains many characters using flyweight pattern"""
     
     def __init__(self):
-        self._characters: List[Character] = []
+        self._characters: list[Character] = []
         self._style_factory = CharacterStyleFactory()
         self._cursor_x = 0
         self._cursor_y = 0
@@ -643,7 +693,7 @@ doc.add_text("bold", "Arial", 12, "black", bold=True)
 doc.add_text(" text.\n", "Arial", 12, "black")
 
 doc.add_text("This is ", "Arial", 12, "black")
-doc.add_text("italic", "Arial", 12, "black", italic=False, italic=True)
+doc.add_text("italic", "Arial", 12, "black", italic=False)
 doc.add_text(" text.\n", "Arial", 12, "black")
 
 doc.add_text("This is ", "Arial", 12, "black")
@@ -696,7 +746,6 @@ print("="*70)
 
 ```python
 import random
-from typing import Dict, List, Tuple
 
 # ============ FLYWEIGHT (Particle Type) ============
 
@@ -730,7 +779,7 @@ class ParticleTypeFactory:
     """Factory manages particle type flyweights"""
     
     def __init__(self):
-        self._types: Dict[str, ParticleType] = {}
+        self._types: dict[str, ParticleType] = {}
     
     def get_particle_type(self, name: str, sprite: str, color: str, size: int) -> ParticleType:
         """Get existing type or create new one"""
@@ -788,7 +837,7 @@ class ParticleSystem:
     """Manages thousands of particles efficiently using flyweight"""
     
     def __init__(self):
-        self._particles: List[Particle] = []
+        self._particles: list[Particle] = []
         self._factory = ParticleTypeFactory()
         self._total_created = 0
     
@@ -872,7 +921,7 @@ class ParticleSystem:
         sample = random.sample(self._particles, sample_size)
         
         # Group by position for display
-        grid: Dict[Tuple[int, int], List[str]] = {}
+        grid: dict[tuple[int, int], list[str]] = {}
         for p in sample:
             grid_x = int(p.x // 10)
             grid_y = int(p.y // 10)
@@ -1149,13 +1198,13 @@ class FlyweightFactory:
 
 ## Summary
 
-| Aspect | Details |
-|--------|---------|
-| **Purpose** | Share common data to save memory |
-| **Use When** | Many similar objects, limited memory |
-| **Avoid When** | Few objects, mostly unique data |
+| Aspect          | Details                                                   |
+|-----------------|-----------------------------------------------------------|
+| **Purpose**     | Share common data to save memory                          |
+| **Use When**    | Many similar objects, limited memory                      |
+| **Avoid When**  | Few objects, mostly unique data                           |
 | **Key Concept** | Separate intrinsic (shared) from extrinsic (unique) state |
-| **Structure** | Flyweight (shared) + Context (unique) + Factory (manages) |
+| **Structure**   | Flyweight (shared) + Context (unique) + Factory (manages) |
 
 ---
 
@@ -1180,15 +1229,10 @@ class FlyweightFactory:
 ## Key Takeaways
 
 1. **Memory Efficiency:** Dramatically reduces memory by sharing common data
-
 2. **Intrinsic vs Extrinsic:** Separate what's shared (intrinsic) from what's unique (extrinsic)
-
 3. **Immutability:** Flyweights must be immutable to be safely shared
-
 4. **Factory Pattern:** Always use factory to manage flyweight sharing
-
 5. **Trade-off:** Saves memory but adds complexity and some CPU overhead
-
 6. **Use Cases:** Games (particles, sprites), text editors (characters), UI (widgets)
 
 ---
