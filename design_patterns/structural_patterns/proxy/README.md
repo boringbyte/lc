@@ -2,14 +2,42 @@
 
 ## 📋 Table of Contents
 - [What is Proxy Pattern?](#what-is-proxy-pattern)
+  - [Key Characteristics](#key-characteristics)
+  - [Real-World Analogy](#real-world-analogy)
+  - [Visual Representation](#visual-representation)
+  - [Proxy vs Similar Patterns](#proxy-vs-similar-patterns)
 - [Types of Proxies](#types-of-proxies)
+  - [1. **Virtual Proxy** (Lazy Initialization)](#1-virtual-proxy-lazy-initialization)
+  - [2. **Protection Proxy** (Access Control)](#2-protection-proxy-access-control)
+  - [3. **Remote Proxy**](#3-remote-proxy)
+  - [4. **Caching Proxy** (Cache)](#4-caching-proxy-cache)
+  - [5. **Logging Proxy**](#5-logging-proxy)
+  - [6. **Smart Reference Proxy**](#6-smart-reference-proxy)
 - [When to Use](#when-to-use)
+  - [✅ Perfect Use Cases](#-perfect-use-cases)
 - [When NOT to Use](#when-not-to-use)
+  - [❌ Avoid Proxy When](#-avoid-proxy-when)
 - [Basic Implementation](#basic-implementation)
+  - [Simple Proxy Structure](#simple-proxy-structure)
 - [Real-World Examples](#real-world-examples)
+  - [Example 1: Virtual Proxy (Lazy Loading Images)](#example-1-virtual-proxy-lazy-loading-images)
+  - [Example 2: Protection Proxy (Access Control)](#example-2-protection-proxy-access-control)
+  - [Example 3: Caching Proxy](#example-3-caching-proxy)
+  - [Example 4: Remote Proxy (API Wrapper)](#example-4-remote-proxy-api-wrapper)
 - [Common Pitfalls](#common-pitfalls)
+  - [❌ Pitfall 1: Proxy Has Different Interface](#-pitfall-1-proxy-has-different-interface)
+  - [❌ Pitfall 2: Not Handling Errors in Remote Proxy](#-pitfall-2-not-handling-errors-in-remote-proxy)
+  - [❌ Pitfall 3: Cache Never Expires](#-pitfall-3-cache-never-expires)
+  - [❌ Pitfall 4: Circular References in Virtual Proxy](#-pitfall-4-circular-references-in-virtual-proxy)
 - [Best Practices](#best-practices)
-
+  - [✅ 1. Keep Proxy Transparent](#-1-keep-proxy-transparent)
+  - [✅ 2. Document Proxy Behavior](#-2-document-proxy-behavior)
+  - [✅ 3. Provide Cache Control Methods](#-3-provide-cache-control-methods)
+  - [✅ 4. Handle Resource Cleanup](#-4-handle-resource-cleanup)
+  - [✅ 5. Use Proxy for Cross-Cutting Concerns](#-5-use-proxy-for-cross-cutting-concerns)
+- [Summary](#summary)
+- [Proxy Types Summary](#proxy-types-summary)
+- [Pattern Comparison](#pattern-comparison)
 ---
 
 ## What is Proxy Pattern?
@@ -41,14 +69,14 @@ Client → Proxy → Real Object
 
 ---
 
-## Proxy vs Similar Patterns
+### Proxy vs Similar Patterns
 
-| Pattern | Purpose | Changes Behavior? |
-|---------|---------|-------------------|
-| **Proxy** | Control access, add functionality | No - same interface, transparent |
-| **Decorator** | Add responsibilities dynamically | No - wraps and enhances |
-| **Adapter** | Convert interface | Yes - provides different interface |
-| **Facade** | Simplify complex system | Yes - provides simpler interface |
+| Pattern       | Purpose                           | Changes Behavior?                  |
+|---------------|-----------------------------------|------------------------------------|
+| **Proxy**     | Control access, add functionality | No - same interface, transparent   |
+| **Decorator** | Add responsibilities dynamically  | No - wraps and enhances            |
+| **Adapter**   | Convert interface                 | Yes - provides different interface |
+| **Facade**    | Simplify complex system           | Yes - provides simpler interface   |
 
 **Key Difference:** Proxy has the **same interface** as the real object and is meant to be **transparent** to the client.
 
@@ -1299,34 +1327,34 @@ class LoggingProxy:
 
 ## Summary
 
-| Aspect | Details |
-|--------|---------|
-| **Purpose** | Control access to another object |
-| **Use When** | Lazy loading, access control, caching, remote objects |
-| **Avoid When** | No control needed, performance critical, over-engineering |
-| **Key Benefit** | Adds functionality without changing real object |
-| **Common Types** | Virtual, Protection, Remote, Caching, Logging |
+| Aspect           | Details                                                   |
+|------------------|-----------------------------------------------------------|
+| **Purpose**      | Control access to another object                          |
+| **Use When**     | Lazy loading, access control, caching, remote objects     |
+| **Avoid When**   | No control needed, performance critical, over-engineering |
+| **Key Benefit**  | Adds functionality without changing real object           |
+| **Common Types** | Virtual, Protection, Remote, Caching, Logging             |
 
 ---
 
 ## Proxy Types Summary
 
-| Type | Purpose | Example |
-|------|---------|---------|
-| **Virtual** | Lazy initialization | Loading large images on demand |
-| **Protection** | Access control | Permission checks before operations |
-| **Remote** | Represent remote object | API wrapper, RPC |
-| **Caching** | Cache expensive operations | Database query caching |
-| **Logging** | Log operations | Audit trails |
-| **Smart Reference** | Additional actions | Reference counting, locking |
+| Type                | Purpose                    | Example                             |
+|---------------------|----------------------------|-------------------------------------|
+| **Virtual**         | Lazy initialization        | Loading large images on demand      |
+| **Protection**      | Access control             | Permission checks before operations |
+| **Remote**          | Represent remote object    | API wrapper, RPC                    |
+| **Caching**         | Cache expensive operations | Database query caching              |
+| **Logging**         | Log operations             | Audit trails                        |
+| **Smart Reference** | Additional actions         | Reference counting, locking         |
 
 ---
 
 ## Pattern Comparison
 
-| Pattern | Interface | Purpose |
-|---------|-----------|---------|
-| **Proxy** | Same as real object | Control access, add functionality |
-| **Decorator** | Same, but wraps | Add responsibilities dynamically |
-| **Adapter** | Different | Convert interface |
-| **Facade** | Simpler | Simplify complex system |
+| Pattern       | Interface           | Purpose                           |
+|---------------|---------------------|-----------------------------------|
+| **Proxy**     | Same as real object | Control access, add functionality |
+| **Decorator** | Same, but wraps     | Add responsibilities dynamically  |
+| **Adapter**   | Different           | Convert interface                 |
+| **Facade**    | Simpler             | Simplify complex system           |
