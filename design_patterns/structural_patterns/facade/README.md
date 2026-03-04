@@ -2,13 +2,34 @@
 
 ## 📋 Table of Contents
 - [What is Facade Pattern?](#what-is-facade-pattern)
+  - [Key Characteristics](#key-characteristics)
+  - [Real-World Analogy](#real-world-analogy)
+  - [Visual Representation](#visual-representation)
+  - [Facade vs Other Patterns](#facade-vs-other-patterns)
 - [When to Use](#when-to-use)
+  - [✅ Perfect Use Cases](#-perfect-use-cases)
 - [When NOT to Use](#when-not-to-use)
+  - [❌ Avoid Facade When](#-avoid-facade-when)
 - [Basic Implementation](#basic-implementation)
+  - [Simple Facade Example](#simple-facade-example)
 - [Real-World Examples](#real-world-examples)
+  - [Example 1: Home Theater System](#example-1-home-theater-system)
+  - [Example 2: E-commerce Order Processing](#example-2-e-commerce-order-processing)
+  - [Example 3: Video Conversion System](#example-3-video-conversion-system)
 - [Common Pitfalls](#common-pitfalls)
+  - [❌ Pitfall 1: Facade Becomes God Object](#-pitfall-1-facade-becomes-god-object)
+  - [❌ Pitfall 2: Facade Duplicates Subsystem Interface](#-pitfall-2-facade-duplicates-subsystem-interface)
+  - [❌ Pitfall 3: Hiding Important Errors](#-pitfall-3-hiding-important-errors)
+  - [❌ Pitfall 4: Too Many Parameters](#-pitfall-4-too-many-parameters)
 - [Best Practices](#best-practices)
-
+  - [✅ 1. Keep Facade Focused](#-1-keep-facade-focused)
+  - [✅ 2. Provide Multiple Levels of Abstraction](#-2-provide-multiple-levels-of-abstraction)
+  - [✅ 3. Document What's Being Simplified](#-3-document-whats-being-simplified)
+  - [✅ 4. Don't Prevent Direct Access](#-4-dont-prevent-direct-access)
+  - [✅ 5. Use Dependency Injection](#-5-use-dependency-injection)
+- [Summary](#summary)
+- [Facade vs Other Patterns](#facade-vs-other-patterns)
+- [When to Use Which Pattern?](#when-to-use-which-pattern)
 ---
 
 ## What is Facade Pattern?
@@ -37,22 +58,22 @@ Client → [Facade] → Subsystem A
                   → Subsystem D
 
 Instead of:
+
 Client → Subsystem A
-      → Subsystem B
-      → Subsystem C
-      → Subsystem D
+       → Subsystem B
+       → Subsystem C
+       → Subsystem D
 ```
 
----
 
-## Facade vs Other Patterns
+### Facade vs Other Patterns
 
-| Pattern | Purpose | Hides Complexity? |
-|---------|---------|-------------------|
-| **Facade** | Simplify interface to subsystem | Yes, but subsystem still accessible |
-| **Adapter** | Convert one interface to another | No, just converts |
-| **Proxy** | Control access to object | No, same interface |
-| **Mediator** | Reduce communication complexity | Yes, centralizes interactions |
+| Pattern      | Purpose                          | Hides Complexity?                   |
+|--------------|----------------------------------|-------------------------------------|
+| **Facade**   | Simplify interface to subsystem  | Yes, but subsystem still accessible |
+| **Adapter**  | Convert one interface to another | No, just converts                   |
+| **Proxy**    | Control access to object         | No, same interface                  |
+| **Mediator** | Reduce communication complexity  | Yes, centralizes interactions       |
 
 ---
 
@@ -248,8 +269,6 @@ Computer started successfully!
 ### Example 1: Home Theater System
 
 ```python
-from typing import List
-
 # ============ COMPLEX SUBSYSTEM (Many components) ============
 
 class Amplifier:
@@ -479,7 +498,6 @@ home_theater.listen_to_music("Pink Floyd - Dark Side of the Moon")
 ### Example 2: E-commerce Order Processing
 
 ```python
-from typing import Dict, List
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
@@ -533,7 +551,7 @@ class InventorySystem:
         
         return available
     
-    def reserve_products(self, items: List[Dict]) -> bool:
+    def reserve_products(self, items: list[dict]) -> bool:
         """Reserve products for order"""
         print("📦 Inventory: Reserving products...")
         
@@ -548,7 +566,7 @@ class InventorySystem:
         
         return True
     
-    def release_products(self, items: List[Dict]):
+    def release_products(self, items: list[dict]):
         """Release reserved products (if order fails)"""
         print("📦 Inventory: Releasing reserved products...")
         
@@ -641,7 +659,7 @@ class OrderDatabase:
     def __init__(self):
         self.orders = {}
     
-    def save_order(self, order_id: str, order_data: Dict) -> bool:
+    def save_order(self, order_id: str, order_data: dict) -> bool:
         """Save order to database"""
         print(f"💾 Database: Saving order {order_id}")
         
@@ -675,7 +693,7 @@ class OrderProcessingFacade:
         self.notifications = NotificationService()
         self.database = OrderDatabase()
     
-    def process_order(self, customer: Customer, items: List[Dict]) -> Dict:
+    def process_order(self, customer: Customer, items: list[dict]) -> dict:
         """
         Simplified interface to process an order.
         
@@ -817,7 +835,7 @@ class OrderProcessingFacade:
                 'message': f'Order failed: {str(e)}'
             }
     
-    def get_order_status(self, order_id: str) -> Dict:
+    def get_order_status(self, order_id: str) -> dict:
         """Get order status - another simplified interface"""
         if order_id in self.database.orders:
             order = self.database.orders[order_id]
@@ -880,7 +898,6 @@ print(status)
 ### Example 3: Video Conversion System
 
 ```python
-from typing import Dict, List
 from enum import Enum
 import time
 
@@ -950,7 +967,7 @@ class AudioMixer:
 class VideoSplitter:
     """Splits video into frames"""
     
-    def split(self, video: VideoFile) -> List:
+    def split(self, video: VideoFile) -> list:
         print(f"✂️  VideoSplitter: Splitting {video.filename} into frames")
         time.sleep(0.1)
         
@@ -962,7 +979,7 @@ class VideoSplitter:
 class VideoEncoder:
     """Encodes video"""
     
-    def encode(self, frames: List, codec: VideoCodec, bitrate: int):
+    def encode(self, frames: list, codec: VideoCodec, bitrate: int):
         print(f"🎬 VideoEncoder: Encoding {len(frames)} frames")
         print(f"   Codec: {codec.value}, Bitrate: {bitrate} kbps")
         
@@ -996,7 +1013,7 @@ class Muxer:
 class MetadataWriter:
     """Writes metadata to file"""
     
-    def write_metadata(self, filename: str, metadata: Dict):
+    def write_metadata(self, filename: str, metadata: dict):
         print(f"📝 MetadataWriter: Writing metadata to {filename}")
         print(f"   Metadata: {metadata}")
         time.sleep(0.05)
@@ -1186,6 +1203,9 @@ class NotificationFacade:
 
 ```python
 # BAD - Just wrapping methods one-to-one
+class SubSystem:
+    pass
+
 class BadFacade:
     def __init__(self):
         self.system = SubSystem()
@@ -1366,24 +1386,24 @@ facade = OrderFacade(
 
 ## Summary
 
-| Aspect | Details |
-|--------|---------|
-| **Purpose** | Provide simplified interface to complex subsystem |
-| **Use When** | Complex subsystems, layered architecture, legacy integration |
-| **Avoid When** | Simple subsystem, need fine control, over-simplification |
-| **Key Benefit** | Reduces coupling, makes subsystem easier to use |
-| **Common Use Cases** | Libraries, frameworks, legacy systems, complex APIs |
+| Aspect               | Details                                                      |
+|----------------------|--------------------------------------------------------------|
+| **Purpose**          | Provide simplified interface to complex subsystem            |
+| **Use When**         | Complex subsystems, layered architecture, legacy integration |
+| **Avoid When**       | Simple subsystem, need fine control, over-simplification     |
+| **Key Benefit**      | Reduces coupling, makes subsystem easier to use              |
+| **Common Use Cases** | Libraries, frameworks, legacy systems, complex APIs          |
 
 ---
 
 ## Facade vs Other Patterns
 
-| Pattern | Purpose | Relationship |
-|---------|---------|--------------|
-| **Facade** | Simplify subsystem | One-to-many (facade to subsystems) |
-| **Adapter** | Convert interface | One-to-one (adapter to adaptee) |
-| **Mediator** | Reduce coupling | Many-to-many (components through mediator) |
-| **Proxy** | Control access | One-to-one (proxy to real object) |
+| Pattern      | Purpose            | Relationship                               |
+|--------------|--------------------|--------------------------------------------|
+| **Facade**   | Simplify subsystem | One-to-many (facade to subsystems)         |
+| **Adapter**  | Convert interface  | One-to-one (adapter to adaptee)            |
+| **Mediator** | Reduce coupling    | Many-to-many (components through mediator) |
+| **Proxy**    | Control access     | One-to-one (proxy to real object)          |
 
 ---
 
