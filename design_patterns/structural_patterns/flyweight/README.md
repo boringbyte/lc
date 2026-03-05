@@ -345,7 +345,6 @@ Memory saved: Created 5 contexts but only 2 flyweights!
 ### Example 1: Game Forest (Trees)
 
 ```python
-from typing import Dict, List
 import random
 
 # ============ FLYWEIGHT (Intrinsic State) ============
@@ -378,7 +377,7 @@ class TreeFactory:
     """
     
     def __init__(self):
-        self._tree_types: Dict[str, TreeType] = {}
+        self._tree_types: dict[str, TreeType] = {}
     
     def get_tree_type(self, name: str, color: str, texture: str) -> TreeType:
         """Get existing tree type or create new one"""
@@ -422,7 +421,7 @@ class Forest:
     """
     
     def __init__(self):
-        self._trees: List[Tree] = []
+        self._trees: list[Tree] = []
         self._factory = TreeFactory()
     
     def plant_tree(self, x: int, y: int, name: str, color: str, texture: str):
@@ -1077,6 +1076,19 @@ class Tree:  # Context
 
 ```python
 # BAD - Creating flyweights directly (no sharing!)
+class TreeType:  # Flyweight
+    def __init__(self, species, color):
+        self.species = species  # Intrinsic only
+        self.color = color
+
+class TreeTypeFactory:
+
+    def __init__(self):
+        self._tree_types: dict[str, TreeType] = {}
+    
+    def get_tree_type(self, species, color):
+        pass
+    
 tree_type1 = TreeType("Oak", "Green")
 tree_type2 = TreeType("Oak", "Green")  # Duplicate!
 # These are different objects even though identical
@@ -1094,6 +1106,23 @@ tree_type2 = factory.get_tree_type("Oak", "Green")
 
 ```python
 # BAD - Only 5 objects, no benefit
+class TreeType:  # Flyweight
+    def __init__(self, species, color):
+        self.species = species  # Intrinsic only
+        self.color = color
+
+        
+class TreeTypeFactory:
+
+    def __init__(self):
+        self._tree_types: dict[str, TreeType] = {}
+    
+    def get_tree_type(self, species, color):
+        pass
+    
+factory = TreeTypeFactory()
+shared_data = {"species": "Oak", "color": "Green"}
+
 for i in range(5):
     obj = factory.get_flyweight(shared_data)
 # Overhead > benefit
