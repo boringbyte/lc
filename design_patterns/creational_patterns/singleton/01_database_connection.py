@@ -20,6 +20,8 @@ class DatabaseConnection:
         if self._connection is None:
             print(f"Creating a new database connection to {db_name}")
             self._connection = sqlite3.connect(db_name, check_same_thread=False)
+        else:
+            print(f"Using existing database connection to {db_name}")
         return self._connection
 
     def execute_query(self, query):
@@ -42,6 +44,7 @@ if __name__ == '__main__':
     db1.connect("myapp.db")
 
     db2 = DatabaseConnection()
+    db2.connect("myapp.db")
     print(db1 is db2)
 
     results = db1.execute_query("SELECT name FROM sqlite_master WHERE type='table';")
