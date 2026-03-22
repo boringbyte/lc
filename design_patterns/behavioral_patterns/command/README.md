@@ -1,4 +1,4 @@
-# 🧠 Behavioral Pattern #2: **Command Pattern**
+# 🧠 **Command Pattern**
 
 ---
 

@@ -1,4 +1,4 @@
-# 🧠 Behavioral Pattern #3: **Iterator Pattern**
+# 🧠 **Iterator Pattern**
 
 ---
 
@@ -864,7 +864,6 @@ class SafeCollection:
 ---
 
 ## ✅ Iterator Pattern Checklist
-
 
 - Does __iter__() return an iterator object (often self)?
 - Does __next__() raise StopIteration when exhausted?

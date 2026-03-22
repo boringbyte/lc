@@ -1,4 +1,4 @@
-# 🧠 Behavioral Pattern #1: **Chain of Responsibility**
+# 🧠 **Chain of Responsibility**
 
 
 ## 📋 Table of Contents
