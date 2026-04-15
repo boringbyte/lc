@@ -1,4 +1,4 @@
-# 🧠 **Chain of Responsibility**
+# 🧠 Chain of Responsibility
 
 
 ## 📋 Table of Contents
@@ -45,6 +45,18 @@ Imagine you have a request that needs to go through multiple validation/processi
 
 ```python
 # ❌ WITHOUT Chain of Responsibility — tightly coupled mess
+
+def junior_dev_handle(request):
+    pass
+
+def senior_dev_handle(request):
+    pass
+
+def manager_handle(request):
+    pass
+
+def cto_handle(request):
+    pass
 
 def handle_request(request):
     if request.level == "LOW":
