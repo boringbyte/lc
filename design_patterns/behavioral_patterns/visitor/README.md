@@ -80,13 +80,25 @@ class TypeCheckVisitor:
     def visit_add(self, node):    ...
     def visit_mul(self, node):    ...
 
-class CodeGenVisitor:          # brand new operation — no element changes!
+class CodeGenVisitor:          # brand-new operation — no element changes!
     def visit_number(self, node): ...
     def visit_add(self, node):    ...
     def visit_mul(self, node):    ...
 
 # Elements only ever need: def accept(self, visitor): visitor.visit_X(self)
 ```
+
+### 🧠 The core idea (plain English)
+
+>"Put operations outside the objects."
+
+Instead of writing methods inside your classes, you create a visitor that “visits” objects and performs actions on them.
+
+### 🔁 Mental shortcut to remember
+
+> “Same objects, new behaviors → use Visitor.”
+
+If you keep adding new methods to classes over and over, Visitor helps you move those behaviors out.
 
 ---
 
@@ -183,6 +195,7 @@ from abc import ABC, abstractmethod
 # Visitor Interface
 # ─────────────────────────────────────────
 class ShapeVisitor(ABC):
+  
     @abstractmethod
     def visit_circle(self, circle: 'Circle') -> None:
         pass
@@ -200,6 +213,7 @@ class ShapeVisitor(ABC):
 # Element Interface
 # ─────────────────────────────────────────
 class Shape(ABC):
+  
     @abstractmethod
     def accept(self, visitor: ShapeVisitor) -> None:
         """Double dispatch: call the visitor's method for THIS type."""
@@ -210,6 +224,7 @@ class Shape(ABC):
 # Concrete Elements
 # ─────────────────────────────────────────
 class Circle(Shape):
+  
     def __init__(self, radius: float):
         self.radius = radius
 
@@ -218,6 +233,7 @@ class Circle(Shape):
 
 
 class Rectangle(Shape):
+  
     def __init__(self, width: float, height: float):
         self.width  = width
         self.height = height
@@ -227,6 +243,7 @@ class Rectangle(Shape):
 
 
 class Triangle(Shape):
+  
     def __init__(self, base: float, height: float):
         self.base   = base
         self.height = height
@@ -241,6 +258,7 @@ class Triangle(Shape):
 import math
 
 class AreaCalculator(ShapeVisitor):
+  
     def __init__(self):
         self.total_area = 0.0
 
@@ -261,6 +279,7 @@ class AreaCalculator(ShapeVisitor):
 
 
 class PerimeterCalculator(ShapeVisitor):
+  
     def __init__(self):
         self.total_perimeter = 0.0
 
@@ -275,7 +294,7 @@ class PerimeterCalculator(ShapeVisitor):
         print(f"  ▭  Rectangle perimeter: {p:.2f}")
 
     def visit_triangle(self, tri: Triangle) -> None:
-        # Isoceles triangle approximation
+        # Isosceles triangle approximation
         side = math.sqrt((tri.base / 2) ** 2 + tri.height ** 2)
         p    = tri.base + 2 * side
         self.total_perimeter += p
@@ -361,6 +380,7 @@ from typing import Any
 # Visitor Interface
 # ─────────────────────────────────────────
 class ExprVisitor(ABC):
+  
     @abstractmethod
     def visit_number(self, node: 'NumberNode') -> Any:
         pass
@@ -386,6 +406,7 @@ class ExprVisitor(ABC):
 # AST Node Elements
 # ─────────────────────────────────────────
 class ExprNode(ABC):
+  
     @abstractmethod
     def accept(self, visitor: ExprVisitor) -> Any:
         pass
@@ -643,6 +664,7 @@ from dataclasses import dataclass, field
 # Document Element Hierarchy
 # ─────────────────────────────────────────
 class DocElement(ABC):
+  
     @abstractmethod
     def accept(self, visitor: 'DocVisitor') -> str:
         pass
@@ -726,6 +748,7 @@ class Document:
 # Visitor Interface
 # ─────────────────────────────────────────
 class DocVisitor(ABC):
+  
     @abstractmethod
     def visit_document_start(self, doc: Document) -> str:
         pass
@@ -1035,6 +1058,7 @@ class ShippingOption:
 # Visitor Interface
 # ─────────────────────────────────────────
 class CartVisitor(ABC):
+  
     @abstractmethod
     def visit_product(self, product: Product) -> Any:
         pass
@@ -1241,8 +1265,9 @@ class CartSummaryVisitor(CartVisitor):
 # Shopping Cart (Object Structure)
 # ─────────────────────────────────────────
 class ShoppingCart:
+  
     def __init__(self):
-        self._items: List = []
+        self._items: list = []
 
     def add(self, *items) -> 'ShoppingCart':
         self._items.extend(items)
@@ -1300,12 +1325,14 @@ cart.checkout()
 ```python
 # ❌ WRONG — new element added to hierarchy without accept()
 class Pentagon(Shape):
+  
     def __init__(self, side: float):
         self.side = side
     # forgot accept()! Visitor can never reach Pentagon.
 
 # ✅ CORRECT — every concrete element MUST implement accept()
 class Pentagon(Shape):
+  
     def __init__(self, side: float):
         self.side = side
 
@@ -1316,6 +1343,7 @@ class Pentagon(Shape):
 ### ❌ Pitfall 2: Visitor Breaking When Element Hierarchy Grows
 
 ```python
+from abc import ABC
 # ❌ PROBLEM — adding Pentagon forces ALL existing visitors to update
 class AreaCalculator(ShapeVisitor):
     ...
@@ -1380,7 +1408,7 @@ class Circle(Shape):
 ### 1. Provide Default `visit_X` in Base Visitor
 
 ```python
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from typing import Any
 
 class ShapeVisitor(ABC):
