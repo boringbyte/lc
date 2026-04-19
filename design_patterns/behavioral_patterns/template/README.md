@@ -144,7 +144,7 @@ The **process never changes** — only specific steps vary by location.
 
 | Role                  | Responsibility                                                      |
 |-----------------------|---------------------------------------------------------------------|
-| **AbstractClass**     | D-efines `template_method()` and all step signatures                |
+| **AbstractClass**     | Defines `template_method()` and all step signatures                 |
 | **template_method()** | The fixed skeleton — calls steps in order; should not be overridden |
 | **Abstract steps**    | Must be overridden by subclasses — the variable parts               |
 | **Concrete steps**    | Implemented in base class — shared by all subclasses                |
@@ -225,6 +225,7 @@ class DataMiner(ABC):
 # Concrete Classes
 # ─────────────────────────────────────────
 class CSVDataMiner(DataMiner):
+  
     def __init__(self, filepath: str):
         self._filepath = filepath
 
@@ -245,6 +246,7 @@ class CSVDataMiner(DataMiner):
 
 
 class APIDataMiner(DataMiner):
+  
     def __init__(self, endpoint: str):
         self._endpoint = endpoint
 
@@ -675,6 +677,7 @@ class EnemyAI(ABC):
 # Concrete AI: Aggressive Warrior
 # ─────────────────────────────────────────
 class AggressiveWarriorAI(EnemyAI):
+  
     def __init__(self):
         super().__init__("Warrior")
         self._rage_stacks = 0
@@ -717,6 +720,7 @@ class AggressiveWarriorAI(EnemyAI):
 # Concrete AI: Cautious Mage
 # ─────────────────────────────────────────
 class CautiousMageAI(EnemyAI):
+  
     def __init__(self):
         super().__init__("Mage")
         self._shields_up = False
@@ -764,6 +768,7 @@ class CautiousMageAI(EnemyAI):
 # Concrete AI: Trickster Rogue
 # ─────────────────────────────────────────
 class TricksterRogueAI(EnemyAI):
+  
     def __init__(self):
         super().__init__("Rogue")
         self._is_stealthed = False
@@ -1073,6 +1078,8 @@ print(f"\n(Total HTML size: {len(html_output)} chars)")
 ### ❌ Pitfall 1: Overriding the Template Method Itself
 
 ```python
+from abc import ABC
+
 # ❌ WRONG — subclass overrides the skeleton, destroying the invariant
 class BadReport(ReportGenerator):
     def generate(self) -> str:   # overrides template method!
@@ -1101,6 +1108,8 @@ class ReportGenerator(ABC):
 ### ❌ Pitfall 2: Too Many Abstract Steps — Forces Unnecessary Overrides
 
 ```python
+from abc import ABC
+
 # ❌ WRONG — 8 abstract methods forces every subclass to implement all 8
 from abc import abstractmethod
 
@@ -1141,6 +1150,8 @@ class BetterPipeline(ABC):
 ### ❌ Pitfall 3: Hooks With Side Effects by Default
 
 ```python
+from abc import ABC
+
 # ❌ WRONG — default hook does something destructive
 class BadPipeline(ABC):
     def _on_complete(self, result):
@@ -1156,6 +1167,8 @@ class GoodPipeline(ABC):
 ### ❌ Pitfall 4: Deep Inheritance Chains
 
 ```python
+from abc import ABC
+
 # ❌ WRONG — template method behavior smeared across 4 levels
 class BasePipeline(ABC):          ...   # defines skeleton
 class AuthenticatedPipeline(BasePipeline): ...   # adds auth step
@@ -1177,7 +1190,7 @@ class BasePipeline(ABC):
 ### 1. Document Which Methods Are Hooks vs Abstract
 
 ```python
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 class DataPipeline(ABC):
     # ── TEMPLATE METHOD (do not override) ─────────────
@@ -1201,6 +1214,8 @@ class DataPipeline(ABC):
 ### 2. Use `final` Semantics via `__init_subclass__`
 
 ```python
+from abc import ABC
+
 class ReportGenerator(ABC):
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -1213,6 +1228,8 @@ class ReportGenerator(ABC):
 ### 3. Prefer Template Method Over Copy-Paste Inheritance
 
 ```python
+from abc import ABC
+
 # When you notice two subclasses have identical method bodies
 # except for one inner call — that's the signal to extract a Template Method.
 
@@ -1256,7 +1273,6 @@ class Notifier(ABC):
 ---
 
 ## ✅ Template Method Pattern Checklist
-
 
 - Is the template method clearly documented as "do not override"?
 - Is each abstract step truly variable across subclasses?
